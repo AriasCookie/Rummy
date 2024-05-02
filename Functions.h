@@ -26,4 +26,6 @@ void createInitialDeck(struct Fichas Baraja[4][26]);
 void createJokers(struct Fichas Comodin[2]);
 
 void imprimirManos(struct ColaJugadores *cola, int totalJugadores);
+void mezclarOrdenJugadores(struct ColaJugadores *cola, int totalJugadores);
+
 #endif

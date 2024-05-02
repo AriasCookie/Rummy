@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "Functions.h"
 #include "Structs.h"
+#include <string.h>
 
 int main() {
     colorReset();
@@ -50,6 +51,10 @@ int main() {
         insertarJugador(&cola, bot, true);
     }
 
+    printf("check 0\n");
+    // Mezclar el orden de los jugadores
+    mezclarOrdenJugadores(&cola, totalJugadores);
+    printf("check 1\n");
     // Repartir cartas a cada jugador y llenar la pila con el resto
     repartirCartasYPila(&cola, Baraja, Comodin, totalJugadores, &pila);
 

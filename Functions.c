@@ -170,3 +170,34 @@ void imprimirManos(struct ColaJugadores *cola, int totalJugadores) {
         actual = actual->siguiente;
     }
 }
+void mezclarOrdenJugadores(struct ColaJugadores *cola, int totalJugadores) {
+    if (cola->frente == NULL) {
+        return; // Si la cola está vacía, no se puede mezclar
+    }
+
+    struct Jugador jugadores[totalJugadores];
+    struct Jugador *actual = cola->frente;
+    int i = 0;
+
+    // Almacenar los jugadores en un arreglo para mezclarlos
+    do {
+        jugadores[i++] = *actual;
+        actual = actual->siguiente;
+    } while (actual != cola->frente);
+
+    // Barajar el arreglo de jugadores
+    for (i = 0; i < totalJugadores; i++) {
+        int j = rand() % totalJugadores;
+        struct Jugador temp = jugadores[i];
+        jugadores[i] = jugadores[j];
+        jugadores[j] = temp;
+    }
+
+    // Reconectar la cola con el nuevo orden
+    for (i = 0; i < totalJugadores - 1; i++) {
+        jugadores[i].siguiente = &jugadores[i + 1];
+    }
+    jugadores[totalJugadores - 1].siguiente = &jugadores[0];
+    cola->frente = &jugadores[0];
+    cola->trasero = &jugadores[totalJugadores - 1];
+}
