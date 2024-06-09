@@ -643,16 +643,17 @@ int jugadaInicial(struct Tablero *tablero, struct ColaJugadores *cola, struct Pi
             }
         }
     }
-
+    struct Fichas fichas[MAX_COLS];
     // Procesar las jugadas
     for (int j = 0; indices[j] != -1; j++)
     {
+        fichas[j] = actual->mano[j];
         agregarFichaPorDerecha(nuevaJugada, actual->mano[indices[j]]);
         k++;
     }
     // Eliminar las fichas utilizadas
-
-    if (k == 4 && sumaCartas % 4)
+    int tipoJuego = revisarAgregarJugada(actual->mano, k, actual->esBot);
+    if (k == 4 && tipoJuego == 2)
         nuevaJugada->cerrada = true;
     if (k == 13)
         nuevaJugada->cerrada = true;
@@ -777,7 +778,7 @@ int iniciarJugada(struct Jugador *actual, int *arrIndices)
             printf("%sJ \t", posibleJugada[k].color);
     }
     printf(BLANCO "\n");
-    int tipoJugada = revisarJugada(posibleJugada, arrSize, actual->esBot);
+    int tipoJugada = revisarAgregarJugada(posibleJugada, arrSize, actual->esBot);
     int joker = -1, indiceTemporal = -1, valorComodin;
     if (tipoJugada == 0)
     {
@@ -860,8 +861,10 @@ int obtenerValorComodin(struct Fichas *mano, int *arrIndices, int arrSize, int k
     }
 }
 
-int revisarJugada(struct Fichas fichas[MAX_COLS], int arrSize, bool esBot)
+int revisarAgregarJugada(struct Fichas fichas[MAX_COLS], int arrSize, bool esBot)
 {
+    if(arrSize < 3)
+        return 0;
     struct Fichas manoTemporal[MAX_COLS];
     for(int i = 0; i < arrSize - 1; i++)
         manoTemporal[i] = fichas[i];
@@ -917,7 +920,7 @@ int revisarJugada(struct Fichas fichas[MAX_COLS], int arrSize, bool esBot)
         }
     }
 
-    
+        
     if (OAK == arrSize - 1)
     {
         return 2; // OAK
@@ -1077,7 +1080,7 @@ int iniciarJugadaNormal(struct Jugador *actual, int *arrIndices)
             printf("%sJ \t", posibleJugada[k].color);
     }
     printf(BLANCO "\n");
-    int tipoJugada = revisarJugada(posibleJugada, arrSize, actual->esBot);
+    int tipoJugada = revisarAgregarJugada(posibleJugada, arrSize, actual->esBot);
 
     if (tipoJugada == 0)
     {
@@ -1173,7 +1176,7 @@ void agregarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores 
         jugada[j] = fichaAgregada;
 
         // Verificar si la jugada es valida y agregar la ficha por izquierda
-        jugadaValida = revisarJugada(jugada, j, actual->esBot);
+        jugadaValida = revisarAgregarJugada(jugada, j, actual->esBot);
         if (jugadaValida != 0 && ((jugada[0].numero == fichaAgregada.numero && jugadaValida == 1) || jugadaValida == 2))
         {
             agregarFichaPorIzquierda(jugadaActual->jugada, fichaAgregada);
@@ -1196,7 +1199,7 @@ void agregarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores 
         jugada[j] = fichaAgregada;
 
         // Verificar si la jugada es valida y agregar la ficha por derecha
-        jugadaValida = revisarJugada(jugada, j, actual->esBot);
+        jugadaValida = revisarAgregarJugada(jugada, j, actual->esBot);
         if (jugadaValida != 0 && ((jugada[j - 1].numero == fichaAgregada.numero && jugadaValida == 1) || jugadaValida == 2))
         {
             agregarFichaPorDerecha(jugadaActual->jugada, fichaAgregada);
@@ -1239,7 +1242,7 @@ void robarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores *c
     struct Jugador *actual = cola->frente;
     printf("Ingrese el indice de la jugada a modificar: ");
     scanf("%d", &indiceJugada);
-    
+
     // Buscar la jugada correspondiente
     for (int i = 0; i < indiceJugada - 1; i++)
     {
@@ -1352,7 +1355,7 @@ void jugadaBot(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila 
             {
                 posibleJugada[l] = color->arreglo[j + l];
             }
-            revision = revisarJugada(posibleJugada, 4, actual->esBot);
+            revision = revisarAgregarJugada(posibleJugada, 4, actual->esBot);
             if (revision != 0)
             {
                 for (int m = 0; m < 4; m++)
@@ -1384,7 +1387,7 @@ void jugadaBot(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila 
             {
                 posibleJugada[l] = color->arreglo[j + l];
             }
-            revision = revisarJugada(posibleJugada, 3, actual->esBot);
+            revision = revisarAgregarJugada(posibleJugada, 3, actual->esBot);
             if (revision != 0)
             {
                 for (int m = 0; m < 3; m++)
