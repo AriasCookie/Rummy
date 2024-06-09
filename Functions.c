@@ -344,7 +344,7 @@ void imprimirIndices(struct Jugador *actual)
     }
 }
 
-void ordenarMano(struct Fichas fichas[TAM_MAX], int n)
+void ordenarMano(struct Fichas *fichas, int n)
 {
     if (n <= 1)
     {
