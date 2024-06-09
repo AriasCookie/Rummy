@@ -1386,3 +1386,143 @@ void Leaderboard(struct ColaJugadores *colaResultados, int totalJugadores)
         posicion++;                 // Aumenta la posicion
     } while (actual != NULL && posicion <= totalJugadores);
 }
+
+bool esConsecutiva(struct Nodo *nodos[], int numFichas) {
+    for (int i = 1; i < numFichas; i++) {
+        if (nodos[i]->ficha.numero != nodos[i - 1]->ficha.numero + 1) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool esDelMismoNumero(struct Nodo *nodos[], int numFichas) {
+    for (int i = 1; i < numFichas; i++) {
+        if (nodos[i]->ficha.numero != nodos[i - 1]->ficha.numero) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void agregarNodo(struct Jugada *jugada, struct Fichas ficha) {
+    struct Nodo *nuevoNodo = (struct Nodo *)malloc(sizeof(struct Nodo));
+    nuevoNodo->ficha = ficha;
+    nuevoNodo->siguiente = NULL;
+    nuevoNodo->anterior = NULL;
+
+    if (jugada->cabeza == NULL) {
+        jugada->cabeza = nuevoNodo;
+    } else {
+        struct Nodo *temp = jugada->cabeza;
+        while (temp->siguiente != NULL) {
+            temp = temp->siguiente;
+        }
+        temp->siguiente = nuevoNodo;
+        nuevoNodo->anterior = temp;
+    }
+    jugada->tamanio++;
+}
+bool validarJugada(struct Jugada *jugada) {
+    struct Nodo *nodos[TAM_MAX];
+    struct Nodo *temp = jugada->cabeza;
+    int count = 0;
+
+    // Copiar nodos a un arreglo para fácil acceso
+    do {
+        nodos[count++] = temp;
+        temp = temp->siguiente;
+    } while (temp != jugada->cabeza && count < jugada->tamanio);
+
+    return (esConsecutiva(nodos, count) || esDelMismoNumero(nodos, count));
+}
+
+bool romperJugada(struct Jugada *original, struct Jugada **jugadas, int *numJugadas) {
+    *numJugadas = 0;
+
+    if (original->tamanio < 6) {
+        return false;
+    }
+
+    struct Nodo *current = original->cabeza;
+    struct Nodo *nodos[original->tamanio];
+    int count = 0;
+
+    // Copiar nodos en un arreglo para fácil acceso
+    while (current != NULL && count < original->tamanio) {
+        nodos[count++] = current;
+        current = current->siguiente;
+    }
+
+    int start = 0;
+    while (start < count) {
+        struct Jugada *nuevaJugada = (struct Jugada *)malloc(sizeof(struct Jugada));
+        nuevaJugada->cabeza = NULL;
+        nuevaJugada->tamanio = 0;
+        nuevaJugada->cerrada = false;
+
+        int end = start + 2; // Necesitamos al menos 3 fichas en cada jugada
+        while (end < count && 
+               (esConsecutiva(&nodos[start], end - start + 1) || 
+                esDelMismoNumero(&nodos[start], end - start + 1))) {
+            end++;
+        }
+        end--;
+
+        for (int i = start; i <= end; i++) {
+            agregarFichaPorDerecha(nuevaJugada, nodos[i]->ficha); // Actualizar el índice de la ficha
+        }
+
+        if (validarJugada(nuevaJugada) && nuevaJugada->tamanio >= 3) {
+            jugadas[(*numJugadas)++] = nuevaJugada;
+        } else {
+            free(nuevaJugada);
+        }
+        start = end + 1;
+    }
+
+    return *numJugadas > 0;
+}
+
+int seleccionarJugada(struct Jugada*, struct Tablero *tablero);{
+    if (tablero->cabeza == NULL) {
+        printf("El tablero está vacío.\n");
+        return NULL;
+    }
+
+    struct NodoTablero *jugadaActual = tablero->cabeza;
+    int jugadaNumero = 1;
+    int seleccion = 0;
+
+    // Imprimir las jugadas disponibles en el tablero
+    printf("Jugadas en el tablero\n");
+    do {
+        printf("Jugada %d:\n", jugadaNumero);
+        struct Nodo *fichaActual = jugadaActual->jugada->cabeza;
+        do {
+            printf("%d %s ", fichaActual->ficha.numero, fichaActual->ficha.color);
+            fichaActual = fichaActual->siguiente;
+        } while (fichaActual != jugadaActual->jugada->cabeza);
+        printf("\n");
+        jugadaActual = jugadaActual->siguiente;
+        jugadaNumero++;
+    } while (jugadaActual != tablero->cabeza);
+
+    // Solicitar al usuario que seleccione una jugada
+    printf("Seleccione una jugada ingresando su número: ");
+    scanf("%d", &seleccion);
+
+    // Validar la selección del usuario
+    if (seleccion < 1 || seleccion >= jugadaNumero) {
+        printf("Selección inválida.\n");
+        return NULL;
+    }
+
+    // Retornar la jugada seleccionada
+    jugadaActual = tablero->cabeza;
+    for (int i = 1; i < seleccion; i++) {
+        jugadaActual = jugadaActual->siguiente;
+    }
+
+    return jugadaActual->jugada;
+}

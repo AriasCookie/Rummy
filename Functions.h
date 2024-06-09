@@ -64,4 +64,6 @@ void finTurno(struct ColaJugadores *cola);
 void revisarSalida(struct ColaJugadores *cola, struct ColaJugadores *colaResultados, int *jugadoresActuales);
 // Funciones de final de juego
 void Leaderboard(struct ColaJugadores *colaResultados, int totalJugadores);
+bool romperJugada(struct Jugada *original, struct Jugada **jugadas, int *numJugadas);
+
 #endif
