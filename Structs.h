@@ -29,7 +29,7 @@ struct Nodo {
 
 struct Jugada {
     struct Nodo *cabeza;
-    int tamanio;
+    int tamanio; 
     bool cerrada; //La jugada ya está completa
 };
 
