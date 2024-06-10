@@ -1,4 +1,6 @@
-struct Jugada **RomperJugadas(struct Jugada *jugada) {
+struct Jugada **RomperJugadas(struct Jugada *jugada, colaJugadores *cola) {
+    //Tablero contiene NodoTablero (apuntadores de jugadas)
+    //colaJugadores contiene a Jugador y su mano
     if (jugada == NULL || jugada->cabeza == NULL) {
         printf("La jugada está vacía.\n");
         return NULL;
@@ -111,9 +113,9 @@ struct Jugada **RomperJugadas(struct Jugada *jugada) {
 
         // Lee la opción ingresada por el usuario
        scanf("%d", &opcion);
-
        // Verifica la opción ingresada
        if (opcion == 1) {
+        //agregarFichaAJugadaRota(jugada, cola) *falta crearla*
        // Si la opción es 1, imprime "trabajando" cambiar a llamar funcion agregar ficha 
         printf("trabajando\n");
          }
@@ -122,9 +124,9 @@ struct Jugada **RomperJugadas(struct Jugada *jugada) {
          printf("Continuando con la siguiente parte del código...\n");
         
         // Revisar 
-
+        int revisar = revisarJugadaExistente(nuevaJugada, 1)
         // Verificar si la copia de la subjugada cumple con el caso 1 o el caso 2
-        if (cumpleCaso1(nuevaJugada) || cumpleCaso2(nuevaJugada)) {
+        if (!(revisar == 0)) {
             // Si la copia cumple con alguno de los casos, agregamos la subjugada al arreglo de subjugadas
             subjugadas[numSubjugadas++] = nuevaJugada;
             eliminarFichasDeJugada(jugada, copiaSubjugada);
