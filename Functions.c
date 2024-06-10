@@ -1648,6 +1648,12 @@ void romperJugadas(struct Tablero *tablero, struct ColaJugadores *cola)
                 jugadaTemporal = *jugadaTemporal.siguiente;
             }
         }
+        printf("Jugada a romper:\n");
+        imprimirJugada(jugadaActual->jugada);
+        colorReset();
+        imprimirIndices(jugadaActual->jugada->tamanio);
+        printf("\n");
+        scanf("%d", &opcion);
         jugadas[count] = dividirJugada(jugadaTemporal.jugada, --indiceJugada);
         agregarJugada(&tableroTemporal, &jugadas[count]);
         count++;
@@ -1665,9 +1671,11 @@ void romperJugadas(struct Tablero *tablero, struct ColaJugadores *cola)
     while (opcion != 2)
     {
         imprimirModificarTablero(&tableroTemporal);
+        //Agregar fichas con agregarFichaAJugadaIncompleta
         do
         {
-            printf("Desea volver a romper la jugada?\n");
+
+            printf("Desea modificar otra jugada?\n");
             printf("1....Si\n");
             printf("2....No\n");
             scanf("%d", &opcion);
@@ -1684,6 +1692,13 @@ void romperJugadas(struct Tablero *tablero, struct ColaJugadores *cola)
                 printf("Opcion invalida.\n");
         } while (opcion != 1 || opcion != 2);
     }
+    for(int i = 0; i < count; i++){
+        
+        jugadaValida = revisarJugadaExistente(&jugadas[i],actual->esBot);
+        if (!jugadaValida)
+            return;
+    }
+    //Agregas jugadas de tablero temporal a tablero original y borras la jugada original
 }
 
 void jugadaBot(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila *pila)
