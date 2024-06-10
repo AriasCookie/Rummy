@@ -10,7 +10,8 @@
 #define GRIS "\x1B[38;2;161;159;156m"
 #define BLANCO "\x1B[37m"
 #define MAX_JUGADORES 4
-#define MAX_JUGADA 13
+#define MAX_ROWS 8
+#define MAX_COLS 13
 // Funciones generales
 int randomNumber();
 void colorReset();
@@ -21,38 +22,47 @@ void createInitialDeck(struct Fichas Baraja[4][26]);
 void createJokers(struct Fichas Comodin[2]);
 void inicializarCola(struct ColaJugadores *cola);
 void inicializarPila(struct Pila *pila);
+void inicializarTablero(struct Tablero *tablero);
+void inicializarJugada(struct Jugada *jugada);
+void inicializarColaCartas(struct colaCartas *colaCartas);
 void insertarJugador(struct ColaJugadores *cola, char nombre[], bool esBot);
 void mezclarJugadores(struct ColaJugadores *cola, int totalJugadores);
 void repartirCartasYPila(struct ColaJugadores *cola, struct Fichas baraja[4][26],
- struct Fichas comodin[2], int totalJugadores, struct Pila *pila);
+                         struct Fichas comodin[2], int totalJugadores, struct Pila *pila);
 void revolver(struct Fichas *array, int n);
-//Funciones para el juego
+// Funciones para el juego
+void imprimirJugada(struct Jugada *jugadaActual);
+void imprimirTablero(struct Tablero *tablero);
 void imprimirManos(struct ColaJugadores *cola, int totalJugadores);
-<<<<<<< HEAD
-void mezclarOrdenJugadores(struct ColaJugadores *cola, int totalJugadores);
-
-=======
 void imprimirManoActual(struct Jugador *actual);
 void imprimirIndices(struct Jugador *actual);
-void ordenarMano(struct Fichas *fichas[TAM_MAX], int n);
+void ordenarMano(struct Fichas *fichas, int n);
+int obtenerValorComodin(struct Fichas *mano, int *arrIndices, int arrSize, int k, int tempIndex);
 bool isJoker(int Joker);
 void comer(struct ColaJugadores *cola, struct Pila *pila);
-    //Funciones para el tablero
-void agregarJugada(struct Tablero *tablero,struct Jugada *nueva_lista);
-        //Agregar fichas a juego existente
+// Funciones para el tablero
+void agregarJugada(struct Tablero *tablero, struct Jugada *nuevaJugada);
+// Agregar fichas a juego existente
 void agregarFichaPorDerecha(struct Jugada *jugada, struct Fichas valor);
 void agregarFichaPorIzquierda(struct Jugada *jugada, struct Fichas valor);
-        //Robar fichas a juego existente
+// Robar fichas a juego existente
 struct Fichas robarPorIzquierda(struct Jugada *jugada);
 struct Fichas robarPorDerecha(struct Jugada *jugada);
-    //Funciones para el jugador
-int revisarJugada(struct Fichas fichas[MAX_JUGADA], int arrSize, bool esBot);
-void jugadaInicial(struct ColaJugadores *cola, struct Pila *pila);
-int iniciarJugada(struct Jugador *actual, int indices[MAX_JUGADA]);
-    //Funciones de control de juego
+// Funciones para el jugador
+int revisarAgregarJugada(struct Fichas fichas[MAX_COLS], int arrSize, bool esBot);
+int jugadaInicial(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila *pila);
+void jugadaNormal(struct Tablero *tablero, struct ColaJugadores *cola);
+int iniciarJugadaNormal(struct Jugador *actual, int *arrIndices);
+int iniciarJugada(struct Jugador *actual, int indices[MAX_COLS]); 
+void agregarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores *cola);
+void robarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores *cola);
+//Funciones para el bot
+void jugadaBot(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila *pila);
+void agregarCartaACola(struct colaCartas *cola, struct Fichas carta, int indice);
+void eliminarCartaDeMano(struct Jugador *jugador, int indice);
+// Funciones de control de juego
 void finTurno(struct ColaJugadores *cola);
-void revisarSalida(struct ColaJugadores* cola, struct ColaJugadores* colaResultados, int *jugadoresActuales);
-//Funciones de final de juego
-void Leaderboard(struct ColaJugadores* colaResultados, int totalJugadores);
->>>>>>> 92af2e1a5223bf0c57f091091b36fb1b616dc71f
-#endif
+void revisarSalida(struct ColaJugadores *cola, struct ColaJugadores *colaResultados, int *jugadoresActuales);
+// Funciones de final de juego
+void Leaderboard(struct ColaJugadores *colaResultados, int totalJugadores);
+#endif //¿qué cosa?
