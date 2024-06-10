@@ -1,3 +1,52 @@
+//probando 
+void agregarFichaAJugadaRota(struct Jugada *jugada, struct ColaJugadores *cola) {
+    if (jugada == NULL) {
+        printf("La jugada es nula.\n");
+        return;
+    }
+
+    struct Jugador *jugadorActual = cola->frente;
+
+    // Imprimir la mano del jugador actual
+    imprimirManoActual(jugadorActual);
+    imprimirIndices(jugadorActual);
+
+    int indiceFicha;
+    printf("Selecciona el índice de la ficha que deseas agregar: ");
+    scanf("%d", &indiceFicha);
+
+    if (indiceFicha < 1 || indiceFicha > jugadorActual->numCartas) {
+        printf("Índice no válido.\n");
+        return;
+    }
+
+    struct Fichas fichaAgregada = jugadorActual->mano[indiceFicha - 1];
+
+    // Preguntar si desea agregar la ficha por izquierda o derecha
+    int opcion;
+    printf("¿Dónde desea agregar la ficha?\n");
+    printf("0...Por izquierda\n");
+    printf("1...Por derecha\n");
+    scanf("%d", &opcion);
+
+    if (opcion == 0) {
+        agregarFichaPorIzquierda(jugada, fichaAgregada);
+    } else if (opcion == 1) {
+        agregarFichaPorDerecha(jugada, fichaAgregada);
+    } else {
+        printf("Opción no válida.\n");
+        return;
+    }
+
+    // Eliminar la ficha de la mano del jugador
+    for (int i = indiceFicha - 1; i < jugadorActual->numCartas - 1; i++) {
+        jugadorActual->mano[i] = jugadorActual->mano[i + 1];
+    }
+    jugadorActual->numCartas--;
+
+    printf("Ficha agregada a la jugada rota.\n");
+}
+
 struct Jugada **RomperJugadas(struct Jugada *jugada, colaJugadores *cola) {
     //Tablero contiene NodoTablero (apuntadores de jugadas)
     //colaJugadores contiene a Jugador y su mano
@@ -146,6 +195,3 @@ struct Jugada **RomperJugadas(struct Jugada *jugada, colaJugadores *cola) {
         free(subjugadas);
         return NULL;
     }
-
-    return subjugadas;
-}
