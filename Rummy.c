@@ -128,10 +128,30 @@ int main()
                 // Segunda tirada, todas las funciones desbloqueadas
                 while (opcion != 4)
                 {
+                    if (cola.frente->jugadaRealizada != 0)
+                    {
+                        if (jugadoresConsola == 0)
+                            PCTurn(1);
+                        else
+                            ClearPlayerTurn();
+                        random = randomNumber();
+                        colorReset();
+                        // Imprimir las manos de los jugadores
+                        imprimirManos(&cola, jugadoresActuales);
+                        colorReset();
+                        if (pila.top != 0)
+                            printf("POZO: %d\n", pila.top);
+                        else
+                            printf("POZO VACIO!\n");
+                        colorReset();
+                        printf("Mesa:\n");
+                        imprimirTablero(&tablero);
+                        colorReset();
+                    }
                     printf("1....Iniciar jugada\n");
                     printf("2...Ordenar fichas\n");
                     printf("3...Modificar jugada existente\n");
-                    if(cola.frente->jugadaRealizada == 0)
+                    if (cola.frente->jugadaRealizada == 0)
                         printf("4...Comer y pasar\n");
                     else
                         printf("4...Terminar turno\n");
@@ -152,6 +172,7 @@ int main()
                         printf("1.....Agregar ficha a jugada existente\n");
                         printf("2.....Robar ficha de jugada existente\n");
                         scanf("%d", &opcion);
+                        ClearPlayerTurn();
                         if (opcion == 1)
                         {
                             agregarFichaAJugadaExistente(&tablero, &cola);
@@ -166,7 +187,7 @@ int main()
                         }
                         break;
                     case 4:
-                        if(cola.frente->jugadaRealizada == 0)
+                        if (cola.frente->jugadaRealizada == 0)
                             comer(&cola, &pila);
                         else
                             finTurno(&cola);
@@ -190,4 +211,3 @@ int main()
 
     return 0;
 }
-

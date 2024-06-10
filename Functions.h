@@ -35,9 +35,9 @@ void imprimirJugada(struct Jugada *jugadaActual);
 void imprimirTablero(struct Tablero *tablero);
 void imprimirManos(struct ColaJugadores *cola, int totalJugadores);
 void imprimirManoActual(struct Jugador *actual);
-void imprimirIndices(struct Jugador *actual);
+void imprimirIndices(int numCartas);
 void ordenarMano(struct Fichas *fichas, int n);
-int obtenerValorComodin(struct Fichas *mano, int *arrIndices, int arrSize, int k, int tempIndex);
+int obtenerValorComodin(struct Fichas *mano, int *arrIndices, int arrSize, int k, int tempIndex, int secTempIndex);
 bool isJoker(int Joker);
 void comer(struct ColaJugadores *cola, struct Pila *pila);
 // Funciones para el tablero
@@ -49,11 +49,11 @@ void agregarFichaPorIzquierda(struct Jugada *jugada, struct Fichas valor);
 struct Fichas robarPorIzquierda(struct Jugada *jugada);
 struct Fichas robarPorDerecha(struct Jugada *jugada);
 // Funciones para el jugador
-int revisarAgregarJugada(struct Fichas fichas[MAX_COLS], int arrSize, bool esBot);
+int revisarJugada(struct Fichas fichas[MAX_COLS], int arrSize, bool esBot);
 int jugadaInicial(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila *pila);
 void jugadaNormal(struct Tablero *tablero, struct ColaJugadores *cola);
 int iniciarJugadaNormal(struct Jugador *actual, int *arrIndices);
-int iniciarJugada(struct Jugador *actual, int indices[MAX_COLS]); 
+int iniciarJugada(struct Jugador *actual, int indices[MAX_COLS]);
 void agregarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores *cola);
 void robarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores *cola);
 //Funciones para el bot
@@ -65,4 +65,4 @@ void finTurno(struct ColaJugadores *cola);
 void revisarSalida(struct ColaJugadores *cola, struct ColaJugadores *colaResultados, int *jugadoresActuales);
 // Funciones de final de juego
 void Leaderboard(struct ColaJugadores *colaResultados, int totalJugadores);
-#endif //¿qué cosa?
+#endif
