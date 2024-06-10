@@ -171,6 +171,7 @@ int main()
                         printf("Selecciona el tipo de jugada a realizar:\n");
                         printf("1.....Agregar ficha a jugada existente\n");
                         printf("2.....Robar ficha de jugada existente\n");
+                        printf("3.....Romper jugada existente\n");
                         scanf("%d", &opcion);
                         ClearPlayerTurn();
                         if (opcion == 1)
@@ -180,6 +181,9 @@ int main()
                         else if (opcion == 2)
                         {
                             robarFichaAJugadaExistente(&tablero, &cola);
+                        }
+                        else if (opcion == 3){
+                            romperJugadas(&tablero, &cola);
                         }
                         else
                         {

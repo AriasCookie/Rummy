@@ -56,6 +56,7 @@ int iniciarJugadaNormal(struct Jugador *actual, int *arrIndices);
 int iniciarJugada(struct Jugador *actual, int indices[MAX_COLS]);
 void agregarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores *cola);
 void robarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores *cola);
+void romperJugadas(struct Tablero *tablero, struct ColaJugadores *cola);
 //Funciones para el bot
 void jugadaBot(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila *pila);
 void agregarCartaACola(struct colaCartas *cola, struct Fichas carta, int indice);
