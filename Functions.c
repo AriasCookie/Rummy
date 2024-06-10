@@ -185,6 +185,8 @@ void repartirCartasYPila(struct ColaJugadores *cola, struct Fichas baraja[4][26]
     // Crear un arreglo temporal para barajar las cartas
     struct Fichas tempBaraja[4 * 26 + 2];
     int idx = 0, k = 0;
+    tempBaraja[idx++] = comodin[0];
+    tempBaraja[idx++] = comodin[1];
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < 26; j++)
@@ -193,10 +195,8 @@ void repartirCartasYPila(struct ColaJugadores *cola, struct Fichas baraja[4][26]
         }
     }
     // Agregar los comodines al arreglo temporal
-    tempBaraja[idx++] = comodin[0];
-    tempBaraja[idx++] = comodin[1];
     // Barajar el arreglo de cartas
-    revolver(tempBaraja, totalCartas); //comentar para depurar
+    // revolver(tempBaraja, totalCartas); // comentar para depurar
     // Repartir las cartas aleatorias a cada jugador
     for (int i = 0; i < totalManos; i++)
     {
@@ -242,7 +242,10 @@ void imprimirJugada(struct Jugada *jugadaActual)
     // Recorre la jugada para imprimir todas las fichas
     do
     {
-        printf("%s%d ", fichaActual->ficha.color, fichaActual->ficha.numero);
+        if (!isJoker(fichaActual->ficha.numero))
+            printf("%s%d\t", fichaActual->ficha.color, fichaActual->ficha.numero);
+        else
+            printf("%sJ\t", fichaActual->ficha.color, fichaActual->ficha.numero);
         fichaActual = fichaActual->siguiente;
     } while (fichaActual != jugadaActual->cabeza);
     printf("%s\n", BLANCO);
@@ -449,7 +452,6 @@ void agregarFichaPorDerecha(struct Jugada *jugada, struct Fichas valor)
 {
     struct Nodo *nuevo_nodo = (struct Nodo *)malloc(sizeof(struct Nodo));
     nuevo_nodo->ficha = valor;
-    printf("%s%d %s agregada\n", nuevo_nodo->ficha.color, nuevo_nodo->ficha.numero, BLANCO);
     if (jugada->cabeza == NULL)
     {
         jugada->cabeza = nuevo_nodo;
@@ -491,18 +493,22 @@ void agregarFichaPorIzquierda(struct Jugada *jugada, struct Fichas valor)
     jugada->tamanio++;
 }
 // Función para agregar ficha en un indice
-void agregarFicha(struct Jugada *jugada, struct Fichas valor, int indice) {
+void agregarFicha(struct Jugada *jugada, struct Fichas valor, int indice)
+{
     struct Nodo *nuevo_nodo = (struct Nodo *)malloc(sizeof(struct Nodo));
     nuevo_nodo->ficha = valor;
-    
+
     if (jugada->cabeza == NULL)
     {
         jugada->cabeza = nuevo_nodo;
         jugada->cabeza->siguiente = nuevo_nodo;
         jugada->cabeza->anterior = nuevo_nodo;
-    } else {
+    }
+    else
+    {
         struct Nodo *actual = jugada->cabeza;
-        for (int i = 0; i < indice && actual->siguiente != jugada->cabeza; i++) {
+        for (int i = 0; i < indice && actual->siguiente != jugada->cabeza; i++)
+        {
             actual = actual->siguiente;
         }
         struct Nodo *anterior = actual->anterior;
@@ -512,7 +518,8 @@ void agregarFicha(struct Jugada *jugada, struct Fichas valor, int indice) {
         anterior->siguiente = nuevo_nodo;
         actual->anterior = nuevo_nodo;
 
-        if (indice == 0) {
+        if (indice == 0)
+        {
             jugada->cabeza = nuevo_nodo;
         }
     }
@@ -575,30 +582,37 @@ struct Fichas robarPorDerecha(struct Jugada *jugada)
 
     return resultado;
 }
-// Función para robar ficha en un índice 
-struct Fichas robarFicha(struct Jugada *jugada, int indice) {
-    if (jugada->cabeza == NULL) {
+// Función para robar ficha en un índice
+struct Fichas robarFicha(struct Jugada *jugada, int indice)
+{
+    if (jugada->cabeza == NULL)
+    {
         printf("Lista vacía, no se puede robar ninguna ficha.\n");
         return (struct Fichas){-1, "N / A", -1}; // Indicador de error
     }
 
     struct Nodo *actual = jugada->cabeza;
-    if(indice == 0)
+    if (indice == 0)
         robarPorIzquierda(jugada);
-    else if(indice == jugada->tamanio)
+    else if (indice == jugada->tamanio - 1)
         robarPorDerecha(jugada);
 
-    for (int i = 0; i < indice && actual->siguiente != jugada->cabeza; i++) {
+    for (int i = 0; i < indice && actual->siguiente != jugada->cabeza; i++)
+    {
         actual = actual->siguiente;
     }
     struct Fichas resultado = actual->ficha;
 
-    if (jugada->tamanio == 1) {
+    if (jugada->tamanio == 1)
+    {
         jugada->cabeza = NULL;
-    } else {
+    }
+    else
+    {
         actual->anterior->siguiente = actual->siguiente;
         actual->siguiente->anterior = actual->anterior;
-        if (actual == jugada->cabeza) {
+        if (actual == jugada->cabeza)
+        {
             jugada->cabeza = actual->siguiente;
         }
     }
@@ -681,8 +695,8 @@ int jugadaInicial(struct Tablero *tablero, struct ColaJugadores *cola, struct Pi
     agregarJugada(tablero, nuevaJugada);
     printf("Mano de %s actualizada:\n", actual->nombre);
     imprimirManoActual(actual);
-    agregarJugada(tablero, nuevaJugada);
-    imprimirJugada(nuevaJugada);
+    printf("\n");
+    colorReset();
     PCTurn(2);
     actual->jugadorActivo = 1; // El jugador ya hizo su jugada inicial
     finTurno(cola);
@@ -816,7 +830,6 @@ int iniciarJugada(struct Jugador *actual, int *arrIndices)
                 if (++joker == 0)
                 {
                     valorComodin = obtenerValorComodin(actual->mano, arrIndices, arrSize, joker, indiceTemporal, secTempIndex);
-                    printf("Valor comodin: %d\n", valorComodin);
                     sumaCartas += valorComodin;
                     secTempIndex = indiceTemporal;
                 }
@@ -827,16 +840,16 @@ int iniciarJugada(struct Jugador *actual, int *arrIndices)
             {
                 if (k == 0)
                     sumaCartas += actual->mano[arrIndices[k + 1]].numero;
-                    indiceTemporal = arrIndices[k + 1];
-                }
-                else
-                {
-                    sumaCartas += actual->mano[arrIndices[k + 2]].numero;
-                    indiceTemporal = arrIndices[k + 2];
-                }
+                indiceTemporal = arrIndices[k + 1];
+            }
+            else
+            {
+                sumaCartas += actual->mano[arrIndices[k + 2]].numero;
+                indiceTemporal = arrIndices[k + 2];
             }
         }
     }
+
     return sumaCartas;
 }
 
@@ -867,7 +880,6 @@ int obtenerValorComodin(struct Fichas *mano, int *arrIndices, int arrSize, int k
     }
     if (j != -1)
     {
-        printf("Valor: %d", mano[arrIndices[j]].numero + 1);
         int valor = mano[arrIndices[j]].numero + 1;
         return valor;
     }
@@ -880,7 +892,7 @@ int obtenerValorComodin(struct Fichas *mano, int *arrIndices, int arrSize, int k
     }
     return -1;
 }
-int revisarJugada(struct Fichas fichas[MAX_COLS], int arrSize, bool esBot)
+int revisarAgregarJugada(struct Fichas fichas[MAX_COLS], int arrSize, bool esBot)
 {
     if (arrSize < 3)
         return 0;
@@ -955,7 +967,7 @@ int revisarJugada(struct Fichas fichas[MAX_COLS], int arrSize, bool esBot)
         return 2; // OAK
     }
 
-    (corrida == arrSize - 1)
+    if (corrida == arrSize - 1)
     {
         return 1; // Corrida
     }
@@ -1006,7 +1018,6 @@ void jugadaNormal(struct Tablero *tablero, struct ColaJugadores *cola)
         agregarFichaPorDerecha(nuevaJugada, actual->mano[indices[j]]);
         k++;
     }
-    printf("Jugada correctamente agregada\n");
     if (k == 4 && sumaCartas % 4)
         nuevaJugada->cerrada = true;
     if (k == 13)
@@ -1117,7 +1128,7 @@ int iniciarJugadaNormal(struct Jugador *actual, int *arrIndices)
             printf("%sJ \t", posibleJugada[k].color);
     }
     printf(BLANCO "\n");
-    int tipoJugada = revisarJugada(posibleJugada, arrSize, actual->esBot);
+    int tipoJugada = revisarAgregarJugada(posibleJugada, arrSize, actual->esBot);
 
     if (tipoJugada == 0)
     {
@@ -1149,17 +1160,82 @@ int iniciarJugadaNormal(struct Jugador *actual, int *arrIndices)
             {
                 if (k == 0)
                     sumaCartas += actual->mano[arrIndices[k + 1]].numero;
-                    indiceTemporal = arrIndices[k + 1];
-                }
-                else
-                {
-                    sumaCartas += actual->mano[arrIndices[k + 2]].numero;
-                    indiceTemporal = arrIndices[k + 2];
-                }
+                indiceTemporal = arrIndices[k + 1];
+            }
+            else
+            {
+                sumaCartas += actual->mano[arrIndices[k + 2]].numero;
+                indiceTemporal = arrIndices[k + 2];
             }
         }
     }
+
     return sumaCartas;
+}
+
+void liberarJugada(struct Jugada *jugada)
+{
+    struct Nodo *actual = jugada->cabeza;
+    struct Nodo *temp;
+
+    while (actual != NULL)
+    {
+        temp = actual;
+        actual = actual->siguiente;
+        free(temp);
+        if (actual == jugada->cabeza)
+        {
+            break;
+        }
+    }
+
+    jugada->cabeza = NULL;
+    jugada->tamanio = 0;
+    jugada->cerrada = false;
+}
+
+// Función para copiar una jugada de origen a destino
+void copiarJugada(struct Jugada *jugadaOrigen, struct Jugada *jugadaDestino)
+{
+    // Liberar la memoria asignada previamente en la jugada destino
+    liberarJugada(jugadaDestino);
+
+    if (jugadaOrigen->cabeza == NULL)
+    {
+        jugadaDestino->cabeza = NULL;
+        jugadaDestino->tamanio = 0;
+        jugadaDestino->cerrada = false;
+        return;
+    }
+
+    // Crear la primera ficha de la jugada destino
+    struct Nodo *actualOrigen = jugadaOrigen->cabeza;
+    struct Nodo *nuevoNodo = (struct Nodo *)malloc(sizeof(struct Nodo));
+    nuevoNodo->ficha = actualOrigen->ficha;
+    nuevoNodo->siguiente = nuevoNodo;
+    nuevoNodo->anterior = nuevoNodo;
+
+    jugadaDestino->cabeza = nuevoNodo;
+    jugadaDestino->tamanio = jugadaOrigen->tamanio;
+    jugadaDestino->cerrada = jugadaOrigen->cerrada;
+
+    struct Nodo *actualDestino = nuevoNodo;
+    actualOrigen = actualOrigen->siguiente;
+
+    // Copiar el resto de las fichas de la jugada origen
+    while (actualOrigen != jugadaOrigen->cabeza)
+    {
+        nuevoNodo = (struct Nodo *)malloc(sizeof(struct Nodo));
+        nuevoNodo->ficha = actualOrigen->ficha;
+
+        nuevoNodo->siguiente = jugadaDestino->cabeza;
+        nuevoNodo->anterior = actualDestino;
+        actualDestino->siguiente = nuevoNodo;
+        jugadaDestino->cabeza->anterior = nuevoNodo;
+
+        actualDestino = nuevoNodo;
+        actualOrigen = actualOrigen->siguiente;
+    }
 }
 
 void ordenarJugadaCompleta(struct Jugada *jugada)
@@ -1202,7 +1278,8 @@ int revisarJugadaExistente(struct Jugada *jugada, bool esBot)
     printf("%d\n", arrSize);
     if (arrSize < 3 || arrSize > 13)
         return 0;
-    struct Jugada jugadaTemporal = *jugada;
+    struct Jugada jugadaTemporal;
+    copiarJugada(jugada, &jugadaTemporal);
     struct Nodo *actual = jugadaTemporal.cabeza;
     ordenarJugadaCompleta(&jugadaTemporal);
     struct Fichas fichas[MAX_COLS];
@@ -1353,11 +1430,17 @@ void agregarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores 
         printf("Opcion invalida.\n");
         return;
     }
-
+    struct Fichas fichaTemp;
     imprimirJugada(jugadaTemporal.jugada);
     jugadaValida = revisarJugadaExistente(jugadaTemporal.jugada, actual->esBot);
     if (jugadaValida == 0)
     {
+        printf("No es una jugada valida\nDeshaciendo jugada...\n");
+        if (opcion == 0)
+            fichaTemp = robarPorIzquierda(jugadaTemporal.jugada);
+        if (opcion == 1)
+            fichaTemp = robarPorDerecha(jugadaTemporal.jugada);
+        PCTurn(2);
         return;
     }
     else
@@ -1372,10 +1455,12 @@ void agregarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores 
     {
         cola->frente->mano[i] = cola->frente->mano[i + 1];
     }
+    ClearPlayerTurn();
     cola->frente->numCartas--;
     cola->frente->jugadaRealizada = 1;
 }
-void agregarFichaAJugadaIncompleta(struct NodoTablero *jugada, struct ColaJugadores *cola){
+void agregarFichaAJugadaIncompleta(struct NodoTablero *jugada, struct ColaJugadores *cola)
+{
     int indiceJugada, opcion, j = 0, jugadaValida = 0;
     struct Jugador *actual = cola->frente;
     // Buscar la jugada correspondiente
@@ -1438,7 +1523,6 @@ void agregarFichaAJugadaIncompleta(struct NodoTablero *jugada, struct ColaJugado
         cola->frente->mano[i] = cola->frente->mano[i + 1];
     }
     cola->frente->numCartas--;
-    
 }
 
 void robarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores *cola)
@@ -1460,73 +1544,41 @@ void robarFichaAJugadaExistente(struct Tablero *tablero, struct ColaJugadores *c
     imprimirJugada(jugadaActual->jugada);
     colorReset();
     imprimirIndices(jugadaActual->jugada->tamanio);
+    printf("\n");
     scanf("%d", &opcion);
     struct Fichas fichaTemp;
     // Robar ficha por izquierda
-    if ((opcion > 0 && opcion < actual->numCartas) && jugadaValida == 2 || (opcion == 0 || opcion == 1) && jugadaValida == 1)
+    if ((opcion > 0 && opcion < actual->numCartas))
     {
-        if (jugadaValida == 1)
-        {
-            if (opcion == 0)
-            {
-                fichaTemp = robarPorIzquierda(jugadaTemporal.jugada);
-                if (jugadaTemporal.jugada->tamanio == 2)
-                {
-                    printf("Deja una carta de tu mano para obtener la carta seleccionada.\n");
-                    agregarFichaAJugadaIncompleta(&jugadaTemporal, cola);
-                    if (jugadaTemporal.jugada->tamanio == 2)
-                    {
-                        printf("No es una jugada valida.\n");
-                        return;
-                    }
-                }
-                *jugadaActual = jugadaTemporal;
-                cola->frente->mano[cola->frente->numCartas++] = fichaTemp;
-                return;
-            }
-            // Robar ficha por derecha
-            else if (opcion == 1 && jugadaValida == 1)
-            {
 
-                fichaTemp = robarPorDerecha(jugadaTemporal.jugada);
-                if (jugadaTemporal.jugada->tamanio == 2)
-                {
-                    printf("Deja una carta de tu mano para obtener la carta seleccionada.\n");
-                    agregarFichaAJugadaIncompleta(&jugadaTemporal, cola);
-                    if (jugadaTemporal.jugada->tamanio == 2)
-                    {
-                        printf("No es una jugada valida.\n");
-                        return;
-                    }
-                }
-                *jugadaActual = jugadaTemporal;
-                cola->frente->mano[cola->frente->numCartas++] = fichaTemp;
-                return;
-            }
-        }
-        else if (jugadaValida == 2)
+        fichaTemp = robarFicha(jugadaTemporal.jugada, --opcion);
+        if (isJoker(fichaTemp.numero))
         {
-            if (opcion < actual->numCartas && opcion > 0)
+            printf("Intenta partir la jugada\n");
+            agregarFicha(jugadaTemporal.jugada, fichaTemp, opcion);
+            return;
+        }
+        if (jugadaTemporal.jugada->tamanio == 2)
+        {
+            printf("Deja una carta de tu mano para obtener la carta seleccionada.\n");
+            agregarFichaAJugadaIncompleta(&jugadaTemporal, cola);
+            if (jugadaTemporal.jugada->tamanio == 2)
             {
-                fichaTemp = robarFicha(jugadaTemporal.jugada, opcion);
-                if (jugadaTemporal.jugada->tamanio == 2)
-                {
-                    printf("Deja una carta de tu mano para obtener la carta seleccionada.\n");
-                    agregarFichaAJugadaIncompleta(&jugadaTemporal, cola);
-                    if (jugadaTemporal.jugada->tamanio == 2)
-                    {
-                        printf("No es una jugada valida.\n");
-                        return;
-                    }
-                }
-                *jugadaActual = jugadaTemporal;
-                cola->frente->mano[cola->frente->numCartas++] = fichaTemp;
+                agregarFicha(jugadaTemporal.jugada, fichaTemp, opcion);
+                printf("No es una jugada valida.\n");
                 return;
             }
         }
+        *jugadaActual = jugadaTemporal;
+        cola->frente->mano[cola->frente->numCartas++] = fichaTemp;
+        return;
     }
     printf("Opcion invalida.\n");
     return;
+}
+
+void romperJugadas(struct Tablero *tablero, struct ColaJugadores *cola){
+    
 }
 
 void jugadaBot(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila *pila)
@@ -1589,7 +1641,7 @@ void jugadaBot(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila 
             {
                 posibleJugada[l] = color->arreglo[j + l];
             }
-            revision = revisarJugada(posibleJugada, 4, actual->esBot);
+            revision = revisarAgregarJugada(posibleJugada, 4, actual->esBot);
             if (revision != 0)
             {
                 for (int m = 0; m < 4; m++)
@@ -1621,7 +1673,7 @@ void jugadaBot(struct Tablero *tablero, struct ColaJugadores *cola, struct Pila 
             {
                 posibleJugada[l] = color->arreglo[j + l];
             }
-            revision = revisarJugada(posibleJugada, 3, actual->esBot);
+            revision = revisarAgregarJugada(posibleJugada, 3, actual->esBot);
             if (revision != 0)
             {
                 for (int m = 0; m < 3; m++)

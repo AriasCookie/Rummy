@@ -128,7 +128,7 @@ int main()
                 // Segunda tirada, todas las funciones desbloqueadas
                 while (opcion != 4)
                 {
-                    if (cola.frente->jugadaRealizada == 0)
+                    if (cola.frente->jugadaRealizada != 0)
                     {
                         if (jugadoresConsola == 0)
                             PCTurn(1);
@@ -172,6 +172,7 @@ int main()
                         printf("1.....Agregar ficha a jugada existente\n");
                         printf("2.....Robar ficha de jugada existente\n");
                         scanf("%d", &opcion);
+                        ClearPlayerTurn();
                         if (opcion == 1)
                         {
                             agregarFichaAJugadaExistente(&tablero, &cola);
