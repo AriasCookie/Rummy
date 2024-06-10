@@ -35,8 +35,9 @@ void imprimirJugada(struct Jugada *jugadaActual);
 void imprimirTablero(struct Tablero *tablero);
 void imprimirManos(struct ColaJugadores *cola, int totalJugadores);
 void imprimirManoActual(struct Jugador *actual);
-void imprimirIndices(struct Jugador *actual);
-void ordenarMano(struct Fichas fichas[TAM_MAX], int n);
+void imprimirIndices(int numCartas);
+void ordenarMano(struct Fichas *fichas, int n);
+int obtenerValorComodin(struct Fichas *mano, int *arrIndices, int arrSize, int k, int tempIndex, int secTempIndex);
 bool isJoker(int Joker);
 void comer(struct ColaJugadores *cola, struct Pila *pila);
 // Funciones para el tablero
